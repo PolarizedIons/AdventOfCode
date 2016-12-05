@@ -22,12 +22,13 @@ def part1(door_id):
 
         index += 1
 
-        if CINAMATIC_DECODE:
-            pas = ''.join([c if c != "_" else random.choice(CINAMATIC_SYMBOLS) for c in password])
-            print(index, "=>", pas, end="\r")
-        else:
-            if FANCY_DECODING:
-                print(index, "=>", password, end="\r")
+        if index%5000 == 0:
+            if CINAMATIC_DECODE:
+                pas = ''.join([c if c != "_" else random.choice(CINAMATIC_SYMBOLS) for c in password])
+                print(index, "=>", pas, end="\r")
+            else:
+                if FANCY_DECODING:
+                    print(index, "=>", password, end="\r")
 
     if FANCY_DECODING:
         print(" " * (len(str(index)) + len(password) + 5), end="\r") # clear line
@@ -56,12 +57,13 @@ def part2(door_id):
 
         index += 1
 
-        if CINAMATIC_DECODE:
-            pas = ''.join([c if c != "_" else random.choice(CINAMATIC_SYMBOLS) for c in password])
-            print(index, "=>", pas, end="\r")
-        else:
-            if FANCY_DECODING:
-                print(index, "=>", password, end="\r")
+        if index % 5000 == 0:
+            if CINAMATIC_DECODE:
+                pas = ''.join([c if c != "_" else random.choice(CINAMATIC_SYMBOLS) for c in password])
+                print(index, "=>", pas, end="\r")
+            else:
+                if FANCY_DECODING:
+                    print(index, "=>", password, end="\r")
 
     if FANCY_DECODING:
         print(" " * (len(str(index)) + len(password) + 5), end="\r") # clear line
