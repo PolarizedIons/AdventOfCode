@@ -1,4 +1,3 @@
-#Advent of Code
-This is my solutions to the [Advent Of Code](http://adventofcode.com/2016) for 2016.
+# Advent of Code
 
-I know these arn't the greatest solutions, and some could be done better, but this is just me having fun ;)
+The yearly code puzzle challenge thing by [@ericwastl](https://twitter.com/ericwastl) . http://adventofcode.com/
