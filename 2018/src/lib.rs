@@ -39,11 +39,28 @@ impl AoCEvent {
 
             if line.is_empty() {
                 let local: DateTime<Local> = Local::now();
-                let day = local.day();
-                if self.days.len() < day as usize{
-                    println!("Day {} doesn't exist", day);
+                let seek_day = local.day();
+                if self.days.len() < seek_day as usize{
+                    println!("Day {} doesn't exist", seek_day);
                     continue;
                 }
+
+                let mut aoc_day = None;
+                for day in self.days.iter_mut() {
+                    if day.day as u32 == seek_day {
+                        aoc_day = Some(day);
+                        break;
+                    }
+                }
+
+                if aoc_day.is_none() {
+                    println!("That's not a day!");
+                    continue;
+                }
+
+                aoc_day.unwrap().print();
+                break;
+
             }
             else if line.eq(&"-1".to_string()) {
                 break;
@@ -102,7 +119,7 @@ impl AoCDay {
     pub fn print(&mut self) {
         println!("Day {}: {}", self.day, self.title);
         for (i, puzzle) in self.puzzles.iter_mut().enumerate() {
-            print!("Part {}: ", i);
+            print!("Part {}: ", (i + 1));
             if puzzle.is_complete {
                 print!("Output: {}\n", puzzle.output());
             }

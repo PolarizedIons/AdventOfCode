@@ -1,7 +1,6 @@
 extern crate advent_of_code_2018 as aoc;
 mod days;
 
-use aoc::AoCDay;
 use aoc::AoCEvent;
 
 
