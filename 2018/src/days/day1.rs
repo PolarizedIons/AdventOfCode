@@ -1,8 +1,6 @@
 use advent_of_code_2018::AoCDay;
 use advent_of_code_2018::Puzzle;
 
-use std::io::Write;
-use std::io::stdout;
 use std::collections::HashSet;
 
 /**
