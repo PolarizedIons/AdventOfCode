@@ -8,13 +8,6 @@ pub struct AoCEvent {
 }
 
 impl AoCEvent {
-    fn new(participant: &str) -> AoCEvent {
-        AoCEvent {
-            participant: participant.to_string(),
-            days: Vec::with_capacity(25),
-        }
-    }
-
     fn menu(&self) {
         println!(" ************************** ");
         println!("     Advent of Code 2018    ");

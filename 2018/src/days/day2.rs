@@ -1,7 +1,6 @@
 use advent_of_code_2018::AoCDay;
 use advent_of_code_2018::Puzzle;
 use std::collections::HashMap;
-use std::collections::hash_map::RandomState;
 
 /*
 --- Day 2: Inventory Management System ---
