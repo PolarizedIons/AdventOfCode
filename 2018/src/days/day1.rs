@@ -88,17 +88,11 @@ fn puzzle2(input: String) -> String {
     let mut current_frequency = 0;
     loop {
         for change in input.iter().cycle() {
-            if found_frequencies.len() % 100 == 0 {
-                print!("\r {}", found_frequencies.len());
-                stdout().flush();
-            }
-
             current_frequency += change;
 
             if ! found_frequencies.contains(&current_frequency) {
                 found_frequencies.insert(current_frequency);
             } else {
-                print!("\n");
                 return format!("{}", current_frequency);
             }
         }
