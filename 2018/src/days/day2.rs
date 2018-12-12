@@ -10,7 +10,7 @@ pub fn day() -> AoCDay {
 
     AoCDay::new(2, "Inventory Management System")
         .add_puzzle(Puzzle::new(input, Box::new(puzzle1)).complete())
-        .add_puzzle(Puzzle::new(input, Box::new(puzzle2)))
+        .add_puzzle(Puzzle::new(input, Box::new(puzzle2)).complete())
 }
 
 fn parse_input(input: String) -> Vec<BoxID> {
@@ -35,49 +35,30 @@ fn puzzle1(input: String) -> String {
 }
 
 fn puzzle2(input: String) -> String {
-    let mut diffs = 0;
-    let mut diff_char = 0;
+
     for line_a in input.lines() {
         for line_b in input.lines() {
             if line_a.eq(line_b) {
                 continue
             }
 
-            println!("diff {} - {}", line_a, line_b);
-            diffs = 0;
-            diff_char = 0;
+            let mut common = String::new();
+
             for i in 0..line_a.len() {
-                let char_a = &line_a[0..1];
-                let char_b = &line_b[0..1];
-                if ! char_a.eq(char_b) {
-                    diffs += 1;
-                    diff_char = i;
-                    println!("did a diff at {}, {} != {}, diffs is now {}", i, char_a, char_b, diffs);
-                }
-
-                if diffs > 1 {
-                    println!("did a break1");
-                    break
+                let char_a = &line_a[i..i+1];
+                let char_b = &line_b[i..i+1];
+                if char_a.eq(char_b) {
+                    common.push(char_a.chars().next().unwrap());
                 }
             }
 
-            if diffs == 1 {
-                println!("found diff at char {}", diff_char);
-                let mut new_line = line_a.clone().to_string();
-                new_line.remove(diff_char);
-                return new_line;
+            if common.len() == (line_a.len() - 1) {
+                return common;
             }
         }
-        if diffs == 1 {
-            println!("found diff at char {}", diff_char);
-            let mut new_line = line_a.clone().to_string();
-            new_line.remove(diff_char);
-            return new_line;
-        }
-
     }
 
-    format!("none")
+    format!("none :(")
 }
 
 #[derive(Debug)]
