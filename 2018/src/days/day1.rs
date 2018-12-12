@@ -3,6 +3,7 @@ use advent_of_code_2018::Puzzle;
 
 use std::io::Write;
 use std::io::stdout;
+use std::collections::HashSet;
 
 /**
 --- Day 1: Chronal Calibration ---
@@ -62,10 +63,11 @@ What is the first frequency your device reaches twice?
 
 Your puzzle answer was 82516.
 */
-pub fn day() -> AoCDay {
-    let input = include_str!("day1_input.txt");
 
-    AoCDay::new(1, "Chronal Calibration (slow calculations!)")
+pub fn day() -> AoCDay {
+    let input = include_str!("inputs/day1.txt");
+
+    AoCDay::new(1, "Chronal Calibration")
         .add_puzzle(Puzzle::new(input, Box::new(puzzle1)).complete())
         .add_puzzle(Puzzle::new(input, Box::new(puzzle2)).complete())
 }
@@ -79,28 +81,24 @@ fn puzzle1(input: String) -> String {
     format!("{}", input.iter().sum::<i32>())
 }
 
-// Around 141k interactions!
 fn puzzle2(input: String) -> String {
     let input = parse_input(input);
-    let mut found_frequencies = Vec::new();
-    found_frequencies.push(0);
+    let mut found_frequencies = HashSet::new();
+    found_frequencies.insert(0);
     let mut current_frequency = 0;
     loop {
         for change in input.iter().cycle() {
-//            if found_frequencies.len() % 100 == 0 {
-//                print!("\r {}", found_frequencies.len());
-//                stdout().flush();
-//            }
+            if found_frequencies.len() % 100 == 0 {
+                print!("\r {}", found_frequencies.len());
+                stdout().flush();
+            }
 
             current_frequency += change;
 
-            // Slow
-//            if !found_frequencies.contains(&current_frequency) {
-            if let Err(_) = found_frequencies.binary_search(&current_frequency) {
-                found_frequencies.push(current_frequency);
-                found_frequencies.sort_unstable();
+            if ! found_frequencies.contains(&current_frequency) {
+                found_frequencies.insert(current_frequency);
             } else {
-//                print!("\n");
+                print!("\n");
                 return format!("{}", current_frequency);
             }
         }
