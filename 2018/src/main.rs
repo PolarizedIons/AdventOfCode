@@ -1,4 +1,6 @@
 extern crate advent_of_code_2018 as aoc;
+extern crate regex;
+
 mod days;
 
 use aoc::AoCEvent;
