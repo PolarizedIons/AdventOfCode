@@ -10,9 +10,9 @@ pub fn day() -> AoCDay {
 }
 
 fn puzzle1(input: String) -> String {
-    "moooo".to_string()
+    format!("no output :(")
 }
 
 fn puzzle2(input: String) -> String {
-    "meooow".to_string()
+    format!("no output :(")
 }

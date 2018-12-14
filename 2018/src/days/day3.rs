@@ -1,7 +1,7 @@
 use advent_of_code_2018::AoCDay;
 use advent_of_code_2018::Puzzle;
 use regex::Regex;
-use std::collections::HashSet;
+use std::collections::HashMap;
 
 pub fn day() -> AoCDay {
     let input = include_str!("inputs/day3.txt");
@@ -17,56 +17,50 @@ pub fn day() -> AoCDay {
 }
 
 fn parse_input(input: String) -> Vec<Claim> {
-    input.lines().map(|line| Claim::new(line)).collect()
+    input.lines().map(|line| Claim::from(line)).collect()
 }
 
 fn puzzle1(input: String) -> String {
     let input = parse_input(input);
 
-    let mut single_claims = HashSet::new();
-    let mut total_claims = 0;
+    let mut claims_map = HashMap::new();
     for claim in input.iter() {
         for i_x in 0..claim.size.0 {
             for i_y in 0..claim.size.1 {
                 let x = claim.location.0 + i_x;
-                let y = claim.location.0 + i_y;
-                let pos = Box::new(Coord(x, y));
+                let y = claim.location.1 + i_y;
 
-                if ! single_claims.contains(&pos) {
-                    single_claims.insert(pos);
-                }
-                total_claims += 1;
+                *claims_map.entry((x, y)).or_insert(0) += 1;
             }
         }
     }
 
-    format!("{}", (total_claims - single_claims.len()) / 2)
+    let conflict_count = claims_map.values().filter(|count| **count > 1).count();
+
+    format!("{}", conflict_count)
 }
 
 fn puzzle2(input: String) -> String {
-    "meooow".to_string()
+    format!("no output :(")
 }
 
 
 #[derive(Debug)]
 struct Claim {
     pub claim_id: i32,
-    pub location: Coord,
-    pub size: Coord,
+    pub location: (i32, i32),
+    pub size: (i32, i32),
 }
 
-impl Claim {
-    pub fn new(line: &str) -> Claim {
+impl From<&str> for Claim {
+    fn from(line: &str) -> Claim {
         let re = Regex::new(r"#([0-9]+) @ ([0-9]+),([0-9]+): ([0-9]+)x([0-9]+)").unwrap();
         let cap = re.captures(line).unwrap();
 
         Claim {
             claim_id: cap[1].parse().unwrap(),
-            location: Coord(cap[2].parse().unwrap(), cap[3].parse().unwrap()),
-            size: Coord(cap[4].parse().unwrap(), cap[5].parse().unwrap()),
+            location: (cap[2].parse().unwrap(), cap[3].parse().unwrap()),
+            size: (cap[4].parse().unwrap(), cap[5].parse().unwrap()),
         }
     }
 }
-
-#[derive(PartialEq, Eq, Debug)]
-struct Coord(i32, i32);
