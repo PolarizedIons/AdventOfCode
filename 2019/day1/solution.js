@@ -1,27 +1,31 @@
-const input = require("../util").readInput("day1/input.txt");
+const raw_input = require("../util").readInput("day1/input.txt");
+const input = raw_input
+  .split("\n")
+  .filter(mass => !!mass)
+  .map(mass => parseInt(mass, 10));
 
 const calculateFuelRequirement = mass => {
   return Math.floor(mass / 3) - 2;
 };
 
-const processInput = input => {
-  const inputs = [];
-
-  input = input.split("\n");
-  for (const mass of input) {
-    if (mass) {
-      inputs.push(calculateFuelRequirement(parseInt(mass, 10)));
-    }
+const calculateFinalFuelRequirement = mass => {
+  let fuelMass = calculateFuelRequirement(mass);
+  let totalFuelMass = 0;
+  while (fuelMass > 0) {
+    totalFuelMass += fuelMass;
+    fuelMass = calculateFuelRequirement(fuelMass);
   }
-
-  return inputs;
+  return totalFuelMass;
 };
 
 module.exports.part1 = async () => {
-  const processedInput = processInput(input);
-  return processedInput.reduce((sum, fuel) => (sum += fuel), 0);
+  return input
+    .map(calculateFuelRequirement)
+    .reduce((sum, fuel) => (sum += fuel), 0);
 };
 
 module.exports.part2 = async () => {
-  return "NOT IMPLEMENTED";
+  return input
+    .map(mass => calculateFinalFuelRequirement(mass))
+    .reduce((sum, fuelMass) => (sum += fuelMass), 0);
 };
