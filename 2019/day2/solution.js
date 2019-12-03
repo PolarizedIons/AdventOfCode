@@ -20,7 +20,7 @@ const runIntcode = opcodes => {
         } else if (opcodes[cursor] === 99) {
             break;
         } else {
-            throw new Exception(
+            throw new Error(
                 "Unknown opcode " + opcodes[cursor] + " at position " + cursor
             );
         }
