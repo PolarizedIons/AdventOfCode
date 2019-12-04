@@ -13,6 +13,7 @@ const input = raw_input
 
 const runWire = (map, wire, wireNum) => {
     let pos = [0, 0];
+    let length = 1;
     for (const instruction of wire) {
         for (let i = 0; i < instruction.length; i++) {
             if (instruction.direction === "U") {
@@ -27,9 +28,13 @@ const runWire = (map, wire, wireNum) => {
                 throw new Error("Unknown direction " + instruction.direction);
             }
             if (!map[pos]) {
-                map[pos] = [];
+                map[pos] = { wires: [], steps: {} };
             }
-            map[pos].push(wireNum);
+            map[pos].wires.push(wireNum);
+            if (!map[pos].steps[wireNum]) {
+                map[pos].steps[wireNum] = length;
+            }
+            length += 1;
         }
     }
 };
@@ -40,18 +45,15 @@ module.exports.part1 = async () => {
 
     let nearest = Number.MAX_SAFE_INTEGER;
     for (let pos in map) {
-        const wires = map[pos];
+        const wires = map[pos].wires;
         pos = pos.split(",").map(num => parseInt(num, 10));
 
         if (wires.indexOf(0) > -1 && wires.indexOf(1) > -1) {
-            // if (wires.length > 1) {
-            console.log(pos, wires);
             if (!pos[0] !== 0 && pos[1] !== 0) {
                 nearest = Math.min(
                     Math.abs(pos[0]) + Math.abs(pos[1]),
                     nearest
                 );
-                console.log(nearest);
             }
         }
     }
@@ -60,5 +62,24 @@ module.exports.part1 = async () => {
 };
 
 module.exports.part2 = async () => {
-    return "NOT IMPLEMENTED";
+    const map = {};
+    runWire(map, input[0], 0);
+    runWire(map, input[1], 1);
+
+    let nearestWire1 = Number.MAX_SAFE_INTEGER;
+    let nearestWire2 = Number.MAX_SAFE_INTEGER;
+
+    for (let pos in map) {
+        const steps = map[pos].steps;
+        pos = pos.split(",").map(num => parseInt(num, 10));
+
+        if (!pos[0] !== 0 && pos[1] !== 0 && "0" in steps && "1" in steps) {
+            if (steps[0] + steps[1] < nearestWire1 + nearestWire2) {
+                nearestWire1 = steps[0];
+                nearestWire2 = steps[1];
+            }
+        }
+    }
+
+    return nearestWire1 + nearestWire2;
 };
