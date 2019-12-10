@@ -4,6 +4,7 @@ module.exports = class IntComputer {
         this.cursor = 0;
 
         this.inputs = inputs;
+        this.outputs = [];
 
         this.running = false;
     }
@@ -11,17 +12,25 @@ module.exports = class IntComputer {
     run() {
         this.running = true;
         while (this.running) {
-            const opcode = this.readOpcode();
-            opcode.run();
+            this.step();
         }
+    }
+
+    step() {
+        const opcode = this.readOpcode();
+        opcode.run();
     }
 
     get output() {
         return this.instructions[0];
     }
 
+    get cursorInt() {
+        return this.instructions[this.cursor];
+    }
+
     readNumber() {
-        const instruction = this.instructions[this.cursor];
+        const instruction = this.cursorInt;
         this.cursor++;
         return instruction;
     }
@@ -121,6 +130,7 @@ class Opcode {
         const pos = this.readArgument().position;
         const value = this.computer.instructions[pos];
         // console.log("Output: ", value);
+        this.computer.outputs.push(value);
         this.computer.instructions[0] = value;
     }
 

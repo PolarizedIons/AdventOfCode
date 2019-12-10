@@ -52,5 +52,108 @@ module.exports.part1 = async () => {
 };
 
 module.exports.part2 = async () => {
-    return "NOT IMPLEMENTED";
+    let maxThrust = -1;
+
+    for (const phaseSettings of permute([5, 6, 7, 8, 9])) {
+        const ampA = new IntComputer(Object.assign([], input), [
+            phaseSettings[0],
+        ]);
+        const ampB = new IntComputer(Object.assign([], input), [
+            phaseSettings[1],
+        ]);
+        const ampC = new IntComputer(Object.assign([], input), [
+            phaseSettings[2],
+        ]);
+        const ampD = new IntComputer(Object.assign([], input), [
+            phaseSettings[3],
+        ]);
+        const ampE = new IntComputer(Object.assign([], input), [
+            phaseSettings[4],
+        ]);
+
+        ampA.running = true;
+        ampB.running = true;
+        ampC.running = true;
+        ampD.running = true;
+        ampE.running = true;
+
+        let ampInput = 0;
+        while (ampE.running) {
+            // AMP A
+            while (
+                ampA.running &&
+                ampA.inputs.length !== 0 &&
+                ampA.cursorInt !== 3
+            ) {
+                ampA.step();
+            }
+            ampA.inputs.push(ampInput);
+            while (ampA.running && ampA.outputs.length === 0) {
+                ampA.step();
+            }
+
+            // AMP B
+            while (
+                ampB.running &&
+                ampA.inputs.length !== 0 &&
+                ampB.cursorInt !== 3
+            ) {
+                ampB.step();
+            }
+            ampB.inputs.push(ampA.output);
+            ampA.outputs = [];
+            while (ampB.running && ampB.outputs.length === 0) {
+                ampB.step();
+            }
+
+            // AMP C
+            while (
+                ampC.running &&
+                ampA.inputs.length !== 0 &&
+                ampC.cursorInt !== 3
+            ) {
+                ampC.step();
+            }
+            ampC.inputs.push(ampB.output);
+            ampB.outputs = [];
+            while (ampC.running && ampC.outputs.length === 0) {
+                ampC.step();
+            }
+
+            // AMP D
+            while (
+                ampD.running &&
+                ampA.inputs.length !== 0 &&
+                ampD.cursorInt !== 3
+            ) {
+                ampD.step();
+            }
+            ampD.inputs.push(ampC.output);
+            ampC.outputs = [];
+            while (ampD.running && ampD.outputs.length === 0) {
+                ampD.step();
+            }
+
+            // AMP E
+            while (
+                ampE.running &&
+                ampA.inputs.length !== 0 &&
+                ampE.cursorInt !== 3
+            ) {
+                ampE.step();
+            }
+            ampE.inputs.push(ampD.output);
+            ampD.outputs = [];
+            while (ampE.running && ampE.outputs.length === 0) {
+                ampE.step();
+            }
+
+            ampInput = ampE.output;
+            ampE.outputs = [];
+        }
+
+        maxThrust = Math.max(maxThrust, ampInput);
+    }
+
+    return maxThrust;
 };
