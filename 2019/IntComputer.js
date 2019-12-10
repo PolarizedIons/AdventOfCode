@@ -6,6 +6,8 @@ module.exports = class IntComputer {
         this.inputs = inputs;
         this.outputs = [];
 
+        this.relativeBase = 0;
+
         this.running = false;
     }
 
@@ -25,19 +27,47 @@ module.exports = class IntComputer {
         return this.instructions[0];
     }
 
-    get cursorInt() {
-        return this.instructions[this.cursor];
+    readMemory(pos) {
+        if (pos < 0) {
+            throw new Error("Tried reading memory at negative position", pos);
+        }
+
+        if (pos > this.instructions.length - 1) {
+            this.extendMemory(this.instructions.length + pos);
+        }
+        return this.instructions[pos];
     }
 
-    readNumber() {
+    writeMemory(pos, val) {
+        if (pos < 0) {
+            throw new Error("Tried wrting to memory at negative position", pos);
+        }
+
+        if (pos > this.instructions.length - 1) {
+            this.extendMemory(this.instructions.length + pos);
+        }
+        this.instructions[pos] = val;
+    }
+
+    get cursorInt() {
+        return this.readMemory(this.cursor);
+    }
+
+    nextNumber() {
         const instruction = this.cursorInt;
         this.cursor++;
         return instruction;
     }
 
     readOpcode() {
-        const opcodeInstruction = this.readNumber();
+        const opcodeInstruction = this.nextNumber();
         return new Opcode(this, opcodeInstruction);
+    }
+
+    extendMemory(total) {
+        while (this.instructions.length < total) {
+            this.instructions.push(0);
+        }
     }
 };
 
@@ -54,7 +84,7 @@ class Opcode {
     }
 
     readArgument() {
-        const num = this.computer.readNumber();
+        const num = this.computer.nextNumber();
         this.argCount += 1;
         const mode = Math.floor(
             (this.instruction % 10 ** (this.argCount + 2)) /
@@ -62,9 +92,15 @@ class Opcode {
         );
 
         if (mode === 0) {
-            return new Argument(mode, num, this.computer.instructions[num]);
+            return new Argument(mode, num, this.computer.readMemory(num));
         } else if (mode === 1) {
             return new Argument(mode, this.computer.cursor - 1, num);
+        } else if (mode === 2) {
+            return new Argument(
+                mode,
+                this.computer.relativeBase + num,
+                this.computer.readMemory(this.computer.relativeBase + num)
+            );
         } else {
             throw new Error("Unknown mode " + mode);
         }
@@ -96,6 +132,9 @@ class Opcode {
             case 8:
                 this.instructionEquals();
                 break;
+            case 9:
+                this.instructionRelativeBaseOffset();
+                break;
             case 99: // Break
                 this.computer.running = false;
                 break;
@@ -109,7 +148,7 @@ class Opcode {
         const num2 = this.readArgument().value;
         const outputPos = this.readArgument().position;
 
-        this.computer.instructions[outputPos] = num1 + num2;
+        this.computer.writeMemory(outputPos, num1 + num2);
     }
 
     instructionMultiply() {
@@ -117,21 +156,21 @@ class Opcode {
         const num2 = this.readArgument().value;
         const outputPos = this.readArgument().position;
 
-        this.computer.instructions[outputPos] = num1 * num2;
+        this.computer.writeMemory(outputPos, num1 * num2);
     }
 
     instructionInput() {
         const pos = this.readArgument().position;
         const input = this.computer.inputs.shift();
-        this.computer.instructions[pos] = input;
+        this.computer.writeMemory(pos, input);
     }
 
     instructionOutput() {
-        const pos = this.readArgument().position;
-        const value = this.computer.instructions[pos];
-        // console.log("Output: ", value);
+        const arg = this.readArgument();
+        const pos = arg.position;
+        const value = this.computer.readMemory(pos);
         this.computer.outputs.push(value);
-        this.computer.instructions[0] = value;
+        this.computer.writeMemory(0, value);
     }
 
     instructionJumpIfTrue() {
@@ -155,8 +194,10 @@ class Opcode {
         const num2 = this.readArgument();
         const output = this.readArgument();
 
-        this.computer.instructions[output.position] =
-            num1.value < num2.value ? 1 : 0;
+        this.computer.writeMemory(
+            output.position,
+            num1.value < num2.value ? 1 : 0
+        );
     }
 
     instructionEquals() {
@@ -164,8 +205,15 @@ class Opcode {
         const num2 = this.readArgument();
         const output = this.readArgument();
 
-        this.computer.instructions[output.position] =
-            num1.value === num2.value ? 1 : 0;
+        this.computer.writeMemory(
+            output.position,
+            num1.value === num2.value ? 1 : 0
+        );
+    }
+
+    instructionRelativeBaseOffset() {
+        const offset = this.readArgument().value;
+        this.computer.relativeBase += offset;
     }
 }
 
